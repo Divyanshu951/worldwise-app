@@ -6,7 +6,7 @@ import {
   useCallback,
 } from "react";
 
-const BASE_URL = "http://localhost:9000";
+const BASE_URL = "https://699badac110b5b738cc07f41.mockapi.io";
 
 const CitiesContext = createContext();
 
@@ -71,7 +71,9 @@ function CitiesProvider({ children }) {
       dispatch({ type: "loading" });
 
       try {
-        const res = await fetch(`${BASE_URL}/cities`);
+        const res = await fetch(`${BASE_URL}/worldwise`);
+        if (!res.ok)
+          throw new Error(`Failed to fetch cities (${res.status})`);
         const data = await res.json();
         dispatch({ type: "cities/loaded", payload: data });
       } catch {
@@ -91,7 +93,9 @@ function CitiesProvider({ children }) {
       dispatch({ type: "loading" });
 
       try {
-        const res = await fetch(`${BASE_URL}/cities/${id}`);
+        const res = await fetch(`${BASE_URL}/worldwise/${id}`);
+        if (!res.ok)
+          throw new Error(`Failed to fetch city (${res.status})`);
         const data = await res.json();
         dispatch({ type: "city/loaded", payload: data });
       } catch {
@@ -108,13 +112,15 @@ function CitiesProvider({ children }) {
     dispatch({ type: "loading" });
 
     try {
-      const res = await fetch(`${BASE_URL}/cities`, {
+      const res = await fetch(`${BASE_URL}/worldwise`, {
         method: "POST",
         body: JSON.stringify(newCity),
         headers: {
           "Content-Type": "application/json",
         },
       });
+      if (!res.ok)
+        throw new Error(`Failed to create city (${res.status})`);
       const data = await res.json();
 
       dispatch({ type: "city/created", payload: data });
@@ -130,9 +136,11 @@ function CitiesProvider({ children }) {
     dispatch({ type: "loading" });
 
     try {
-      await fetch(`${BASE_URL}/cities/${id}`, {
+      const res = await fetch(`${BASE_URL}/worldwise/${id}`, {
         method: "DELETE",
       });
+      if (!res.ok)
+        throw new Error(`Failed to delete city (${res.status})`);
 
       dispatch({ type: "city/deleted", payload: id });
     } catch {
